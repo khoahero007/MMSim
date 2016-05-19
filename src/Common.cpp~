@@ -1,0 +1,41 @@
+#include "Common.h"
+#include <iostream>
+
+CallBackFunc Module::getToBeCalled(std::string T){
+  std::vector<std::string>::iterator it = std::find (Tag.begin(),Tag.end(),T);
+  if (it !=Tag.end()){
+    auto pos = std::distance(Tag.begin(),it);
+    auto ret = ToBeCalledList.at(pos);
+    
+    Tag.erase(Tag.begin()+pos);
+    ToBeCalledList.erase(ToBeCalledList.begin()+pos);
+    return ret;
+  }else{
+    throw std::invalid_argument("Can not find Tag ");
+  }
+}
+
+
+void Module::setToCall(CallBackFunc f, int n){
+  ToCallList.insert(ToCallList.begin()+n,f);
+}
+
+void Module::Diagnose(){
+  for (auto s : SubModules){
+    s.Diagnose();
+  };
+}
+
+void connect(Module *master,int n, Module *slave, std::string Tag){
+  try{
+    auto f = slave->getToBeCalled(Tag);
+    master->setToCall(f,n);
+  }catch(const std::exception &e){
+    panic(e.what());
+  }
+}
+
+void panic(std::string e){
+  std::cerr << e << std::endl;
+  exit(-1);
+}
