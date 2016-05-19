@@ -1,8 +1,0 @@
-#include "../Common.h"
-
-class Test: public Module{
-  
-};
-
-class Test2: public Module{
-};
