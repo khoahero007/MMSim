@@ -1,6 +1,10 @@
 #include "Common.h"
 #include <iostream>
 
+Module::Module(){
+  timeStamp = 0;
+}
+
 CallBackFunc Module::getToBeCalled(std::string T){
   std::vector<std::string>::iterator it = std::find (ToBeCalledTag.begin(),ToBeCalledTag.end(),T);
   if (it !=ToBeCalledTag.end()){
@@ -26,16 +30,35 @@ void Module::setToCall(CallBackFunc f, std::string T){
   }
 }
 
+void Module::addMaster(Module* m, std::string T){
+  std::vector<std::string>::iterator it = std::find (MasterTag.begin(),MasterTag.end(),T);
+  if (it != MasterTag.end()){
+    auto pos = std::distance(MasterTag.begin(),it);
+    Master.insert(Master.begin()+pos,m);
+  }else{
+    //throw std::invalid_argument("Can not find Tag in MasterTag");
+  }
+}
+
+uint64_t Module::getTimeStamp(){
+  return timeStamp;
+}
+
+void Module::tick(int n){
+  timeStamp = timeStamp + n;
+}
+
 void Module::Diagnose(){
   for (auto s : SubModules){
     s.Diagnose();
   };
 }
 
-void connect(Module *master,std::string MTag, Module *slave, std::string STag){
+void connect(Module *master,std::string MTag, Module *slave, std::string STag, std::string MasterTag){
   try{
     auto f = slave->getToBeCalled(STag);
     master->setToCall(f,MTag);
+    slave->addMaster(master,MasterTag);
   }catch(const std::exception &e){
     panic(e.what());
   }

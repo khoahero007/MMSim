@@ -1,0 +1,9 @@
+#ifndef PINGQUEUE_H_
+#define PINGQUEUE_H_
+
+class PingQueue: public Queue{
+ public:
+  void tick(int);
+}
+
+#endif // PINGQUEUE_H_

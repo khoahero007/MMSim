@@ -1,17 +1,38 @@
 #include <vector>
 #include <iostream>
 #include "Common.h"
-#include "Test/Test.h"
+#include "Queue/PingQueue/PingQueue.h"
 
 
 using namespace std;
 
 int main(){
-  //Module m;
-  //Test1 t;
-  //Test2 t;
-  //funct<Package(Package)> k1,k2;
-  //k1 = Test1.Connect
+  PingQueue q(10);
+  Module r;
+
+  auto isFull = q.getToBeCalled("isFull");
+  auto sendPackage = q.getToBeCalled("sendPackage");
+  auto isDone = q.getToBeCalled("isDone");
+  auto getPackage = q.getToBeCalled("getPackage");
+
+  q.addMaster(&r,"Anything");
+  Package t;
+  for (auto i=0;i<100;i++){
+    
+    Package p = isFull(t);
+    if (*(int*)p[0]==0){
+      p=sendPackage(p);
+      cout << "Send package at " << i << endl;
+    }
+    p = isDone(t);
+    if (*(int*)p[0]==1){
+      p=getPackage(p);
+      cout << "Get package at " << i << endl;
+    }
+    r.tick(1);
+  }
+  
+  /*
   Test1 t1;
   Test2 t2;
   
@@ -32,6 +53,6 @@ int main(){
   Package p1 =t1_f (p);
   Package p2 =t2_f (p);
   cout << *((double*)p1[0]) << endl;
-  cout << *((double*)p2[0]) << endl;
+  cout << *((double*)p2[0]) << endl;*/
 }
 

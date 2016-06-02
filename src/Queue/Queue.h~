@@ -1,0 +1,19 @@
+#ifndef QUEUE_H_
+#define QUEUE_H_
+#include "../Common.h"
+
+class Queue: public Module{
+ public:
+  Queue(int);
+ protected:
+  Package isAvailable(Package);
+  Package sendPackage(Package);
+  Package isDone(Package);
+  Package getPackage(Package);
+  std::vector<Package> queue;
+  std::vector<int> done;
+  int size;
+  
+}
+
+#endif // QUEUE_H_

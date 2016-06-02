@@ -17,14 +17,23 @@ class Module{
  public:
   CallBackFunc getToBeCalled(std::string);
   void setToCall(CallBackFunc,std::string);
+  void addMaster(Module*,std::string);
   void Diagnose();
-  Module(){};
+  uint64_t getTimeStamp();
+  virtual void tick(int);
+  Module();
  protected:
+  uint64_t timeStamp;
   CBFuncList ToBeCalledList;
   std::vector<std::string> ToCallTag;
-  std::vector<std::string> ToBeCalledTag;
-  std::vector<Module> SubModules;
+  
   CBFuncList ToCallList;
+  std::vector<std::string> ToBeCalledTag;
+  
+  std::vector<Module*> Master;
+  std::vector<std::string> MasterTag;
+  
+  std::vector<Module> SubModules;
 };
 
 void connect(Module*,std::string,Module*,std::string);
