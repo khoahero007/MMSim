@@ -1,0 +1,14 @@
+#include "Requester.h"
+
+Requester::Requester():Module(){
+  //Module::Module();
+  ToCallTag.push_back("isFull");
+  ToCallTag.push_back("sendPackage");
+  ToCallTag.push_back("isDone");
+  ToCallTag.push_back("getPackage");
+}
+
+int Requester::isFinish(){
+  panic("This module is not final yet");
+  return -1;
+}

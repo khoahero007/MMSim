@@ -1,0 +1,14 @@
+#include "TimedRequester.h"
+
+FillRequester::FillRequester(std::string filename):Requester(){
+  fileStream.open(filename.c_str(),std::ifstream::in);
+  finish = 0;
+  isFull_p      = &ToCallList[0];
+  sendPackage_p = &ToCallList[1];
+  isDone_p      = &ToCallList[2];
+  getPackage_p  = &ToCallList[3];
+}
+
+int FillRequester::isFinish(){
+  return finish;
+}

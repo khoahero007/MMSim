@@ -1,0 +1,35 @@
+#include "FillRequester.h"
+
+FillRequester::FillRequester(std::string filename):Requester(){
+  fileStream.open(filename);
+  finish = 0;
+  isFull_p      = &ToCallList[0];
+  sendPackage_p = &ToCallList[1];
+  isDone_p      = &ToCallList[2];
+  getPackage_p  = &ToCallList[3];
+}
+
+void FillRequester::tick(int n){
+  if (finish == 1)
+    timeStamp = timeStamp+n;
+  else if (fileStream.eof()){
+    finish =1;
+    timeStamp = timeStamp+n;
+  }else{
+    uint_64 end = timeStamp + n;
+    Package p;
+    while (!fileStream.eof() && timeStamp < end){
+      p = isFull(NULL_PACKAGE);
+      if (*(int*)p[0]==0){
+      }
+      p = isDone(NULL_PACKAGE);
+      if (*(int*)p[0]==1){
+	p=getPackage(p);
+      }
+    }
+  }
+}
+
+int FillRequester::isFinish(){
+  return finish;
+}

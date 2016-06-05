@@ -1,7 +1,7 @@
 #include "Queue.h"
 
-Queue::Queue(int x){
-  timeStamp=0;
+Queue::Queue(int x):Module(4){
+  //timeStamp=0;
   size = x;
   ToBeCalledList.push_back(std::bind(&Queue::isFull,this,std::placeholders::_1));
   ToBeCalledTag.push_back("isFull");

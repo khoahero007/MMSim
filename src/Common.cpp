@@ -1,9 +1,11 @@
 #include "Common.h"
 #include <iostream>
 
-Module::Module(){
+Module::Module(int x){
   timeStamp = 0;
+  ToCallList.resize(x);
 }
+
 
 CallBackFunc Module::getToBeCalled(std::string T){
   std::vector<std::string>::iterator it = std::find (ToBeCalledTag.begin(),ToBeCalledTag.end(),T);
@@ -22,9 +24,9 @@ CallBackFunc Module::getToBeCalled(std::string T){
 
 void Module::setToCall(CallBackFunc f, std::string T){
   std::vector<std::string>::iterator it = std::find (ToCallTag.begin(),ToCallTag.end(),T);
-  if (it != ToBeCalledTag.end()){
+  if (it != ToCallTag.end()){
     auto pos = std::distance(ToCallTag.begin(),it);
-    ToCallList.insert(ToCallList.begin()+pos,f);
+    ToCallList[pos]=f;;
   }else{
     throw std::invalid_argument("Can not find Tag in ToCallTag");
   }
@@ -34,7 +36,8 @@ void Module::addMaster(Module* m, std::string T){
   std::vector<std::string>::iterator it = std::find (MasterTag.begin(),MasterTag.end(),T);
   if (it != MasterTag.end()){
     auto pos = std::distance(MasterTag.begin(),it);
-    Master.insert(Master.begin()+pos,m);
+    if (Master.size()<=pos) Master.resize(pos+1);
+    Master[pos]=m;
   }else{
     //throw std::invalid_argument("Can not find Tag in MasterTag");
   }
@@ -46,12 +49,17 @@ uint64_t Module::getTimeStamp(){
 
 void Module::tick(int n){
   timeStamp = timeStamp + n;
+  panic("This module is not final yet");
 }
 
 void Module::Diagnose(){
   for (auto s : SubModules){
     s.Diagnose();
   };
+}
+
+std::vector<std::string> Module::getMasterList(){
+  return MasterTag;
 }
 
 void connect(Module *master,std::string MTag, Module *slave, std::string STag, std::string MasterTag){

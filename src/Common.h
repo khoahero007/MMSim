@@ -6,7 +6,8 @@
 #include <functional>
 #include <memory>
 #include <algorithm>
-
+#include "Request.h"
+#include "DEBUG_FLAG.h"
 class Module;
 typedef std::vector<void*> Package;
 typedef std::function<Package(Package)> CallBackFunc ;
@@ -19,9 +20,10 @@ class Module{
   void setToCall(CallBackFunc,std::string);
   void addMaster(Module*,std::string);
   void Diagnose();
+  std::vector<std::string> getMasterList();
   uint64_t getTimeStamp();
   virtual void tick(int);
-  Module();
+  Module(int);
  protected:
   uint64_t timeStamp;
   CBFuncList ToBeCalledList;
@@ -36,8 +38,10 @@ class Module{
   std::vector<Module> SubModules;
 };
 
-void connect(Module*,std::string,Module*,std::string);
+void connect(Module*,std::string,Module*,std::string,std::string);
 void panic(std::string);
+
+//Package NULL_PACKAGE;
 
 #endif // COMMON_H_
 

@@ -5,9 +5,9 @@
 class Requester: public Module{
  public:
   Requester();
- protected:
-  
-}
+  virtual int isFinish();
+  //protected:
+};
 
 
 #endif // TEST_H_
