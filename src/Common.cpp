@@ -1,9 +1,11 @@
 #include "Common.h"
 #include <iostream>
+#include <sstream>
 
 Module::Module(int x){
   timeStamp = 0;
-  ToCallList.resize(x);
+  if (x>0) ToCallList.resize(x);
+  nameTag = generateNameTag();
 }
 
 
@@ -26,7 +28,7 @@ void Module::setToCall(CallBackFunc f, std::string T){
   std::vector<std::string>::iterator it = std::find (ToCallTag.begin(),ToCallTag.end(),T);
   if (it != ToCallTag.end()){
     auto pos = std::distance(ToCallTag.begin(),it);
-    ToCallList[pos]=f;;
+    ToCallList[pos]=f;
   }else{
     throw std::invalid_argument("Can not find Tag in ToCallTag");
   }
@@ -52,10 +54,8 @@ void Module::tick(int n){
   panic("This module is not final yet");
 }
 
-void Module::Diagnose(){
-  for (auto s : SubModules){
-    s.Diagnose();
-  };
+std::string Module::getNameTag(){
+  return nameTag;
 }
 
 std::vector<std::string> Module::getMasterList(){
@@ -72,7 +72,19 @@ void connect(Module *master,std::string MTag, Module *slave, std::string STag, s
   }
 }
 
+void printPackage(Package in){
+  for (auto i=0;i<in.size();i++)
+    std::cout << std::dec << *(int*) in[i] << " ";
+  std::cout << std::endl;
+}
+
 void panic(std::string e){
   std::cerr << e << std::endl;
   exit(-1);
+}
+
+std::string generateNameTag(){
+  std::stringstream sstream;
+  sstream << "0x" <<std::hex << std::rand()%65536;
+  return sstream.str();
 }

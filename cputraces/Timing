@@ -1,0 +1,12 @@
+tBurst 2
+tCAS 10 
+tCMD 2
+tCWD 8
+tDQS 4
+tFAW 48
+tRAS 40
+tRC 50
+tRCD 10
+tRRD 10
+tRP 10
+tWR 10

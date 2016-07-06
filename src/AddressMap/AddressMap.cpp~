@@ -1,0 +1,6 @@
+#include "../Common.h"
+
+Package AddressMap::getMap(Package in){
+  Package out;
+  out = in;
+}

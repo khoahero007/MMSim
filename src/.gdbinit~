@@ -1,0 +1,19 @@
+b main
+r
+b TimedRequester::tick
+
+#b Mapping::map_port
+#command
+#print mapProp
+#print in
+#end
+
+#b RRArbiter::isAvai if (in.size()!=3)
+#b RRArbiter::sendPackage
+#b FillRequester::tick
+#b RRArbiter::isAvai
+#b Mapping::isAvai
+#b Mapping::map_port
+#b Mapping::sendPackage
+#b RRArbiter::tick
+#b Arbiter/RRArbiter/RRArbiter.cpp:24

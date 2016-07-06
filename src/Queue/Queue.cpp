@@ -3,8 +3,8 @@
 Queue::Queue(int x):Module(4){
   //timeStamp=0;
   size = x;
-  ToBeCalledList.push_back(std::bind(&Queue::isFull,this,std::placeholders::_1));
-  ToBeCalledTag.push_back("isFull");
+  ToBeCalledList.push_back(std::bind(&Queue::isAvai,this,std::placeholders::_1));
+  ToBeCalledTag.push_back("isAvai");
   ToBeCalledList.push_back(std::bind(&Queue::sendPackage,this,std::placeholders::_1));
   ToBeCalledTag.push_back("sendPackage");
   ToBeCalledList.push_back(std::bind(&Queue::isDone,this,std::placeholders::_1));
@@ -12,7 +12,7 @@ Queue::Queue(int x):Module(4){
   ToBeCalledList.push_back(std::bind(&Queue::getPackage,this,std::placeholders::_1));
   ToBeCalledTag.push_back("getPackage");
     
-  ToCallTag.push_back("isFull");
+  ToCallTag.push_back("isAvai");
   ToCallTag.push_back("sendPackage");
   ToCallTag.push_back("isDone");
   ToCallTag.push_back("getPackage");

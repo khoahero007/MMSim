@@ -6,8 +6,10 @@
 #include <functional>
 #include <memory>
 #include <algorithm>
-#include "Request.h"
+#include "CONSTANT.h"
 #include "DEBUG_FLAG.h"
+
+
 class Module;
 typedef std::vector<void*> Package;
 typedef std::function<Package(Package)> CallBackFunc ;
@@ -19,13 +21,15 @@ class Module{
   CallBackFunc getToBeCalled(std::string);
   void setToCall(CallBackFunc,std::string);
   void addMaster(Module*,std::string);
-  void Diagnose();
   std::vector<std::string> getMasterList();
   uint64_t getTimeStamp();
+  std::string getNameTag();
   virtual void tick(int);
   Module(int);
  protected:
   uint64_t timeStamp;
+  std::string nameTag;
+  
   CBFuncList ToBeCalledList;
   std::vector<std::string> ToCallTag;
   
@@ -36,10 +40,27 @@ class Module{
   std::vector<std::string> MasterTag;
   
   std::vector<Module> SubModules;
+
+};
+
+class AddressMap{
+ public:
+  static Package getMap(Package);
+  static void updateChannelMask(uint64_t in){};
+  static void updateRankMask(uint64_t in){};
+  static void updateBankMask(uint64_t in){};
+  static void updateChipMask(uint64_t in){};
+  static void updateRowMask(uint64_t in){};
+  static void updateColumnMask(uint64_t in){};
+ protected:
+  static uint64_t channelMask,rankMask,bankMask,chipMask,rowMask,columnMask;
 };
 
 void connect(Module*,std::string,Module*,std::string,std::string);
 void panic(std::string);
+void printPackage(Package);
+
+std::string generateNameTag();
 
 //Package NULL_PACKAGE;
 

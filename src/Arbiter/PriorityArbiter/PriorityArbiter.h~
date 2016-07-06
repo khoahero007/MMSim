@@ -1,0 +1,12 @@
+#ifndef PRIORITY_ARBITER_H_
+#define PRIORITY_ARBITER_H_
+
+#include "../Arbiter.h"
+
+class PriorityArbiter: public Arbiter{
+ public:
+  PriorityArbiter(int);
+  void tick(int);
+}
+
+#endif //PRIORITY_ARBITER_H_

@@ -1,0 +1,18 @@
+#ifndef COMMAND_ISSUE_H_
+#define COMMAND_ISSUE_H_
+
+#include "../Common.h"
+
+class CommandIssue: public Module{
+ public:
+  CommandIssue();
+  void tick(int);
+ protected:
+  Package isAvai(Package);
+  Package sendPackage(Package);
+  Package isDone(Package);
+  Package getPackage(Package);
+}
+
+
+#endif //COMMAND_ISSUE_H_

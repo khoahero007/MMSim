@@ -1,0 +1,41 @@
+#include "Mapping.h"
+
+Mapping::Mapping(std::vector<int> num,std::vector<int> bit,std::vector<int> map_in):Module(map_in.size()*4){
+  std::string isAvai_s,sendPackage_s,isDone_s,getPackage_s;
+  isAvai_s = "isAvai";
+  sendPackage_s = "sendPackage";
+  isDone_s = "isDone";
+  getPackage_s = "getPackage";
+  
+  ToBeCalledList.push_back(std::bind(&Mapping::isAvai,this,std::placeholders::_1));
+  ToBeCalledTag.push_back("isAvai");
+  ToBeCalledList.push_back(std::bind(&Mapping::sendPackage,this,std::placeholders::_1));
+  ToBeCalledTag.push_back("sendPackage");
+  ToBeCalledList.push_back(std::bind(&Mapping::isDone,this,std::placeholders::_1));
+  ToBeCalledTag.push_back("isDone");
+  ToBeCalledList.push_back(std::bind(&Mapping::getPackage,this,std::placeholders::_1));
+  ToBeCalledTag.push_back("getPackage");
+  
+  map = map_in;
+  bitPosition = bit;
+  numPosition = num;
+  int temp=0;
+  for (auto i=0;i<map.size();i++){
+    ToCallTag.push_back(isAvai_s+"_"+std::to_string(i)+"_");
+    ToCallTag.push_back(sendPackage_s+"_"+std::to_string(i)+"_");
+    ToCallTag.push_back(isDone_s+"_"+std::to_string(i)+"_");
+    ToCallTag.push_back(getPackage_s+"_"+std::to_string(i)+"_");
+    if (temp<map[i])
+      temp = map[i];
+  }
+  waitingPackage.resize(temp+1);
+  waitingPackageValid.resize(temp+1,0);
+}
+
+int map_port(Package in){
+  int out=0;
+  for (auto i = 0; i < bitPosition.size(); i++){
+    out = out*2 + ((*(uint64_t*)in[numPosition[i]] >> bitPosition[i]) & 1);
+  }
+  return out;
+}

@@ -1,0 +1,61 @@
+#include "DRAMDevice.h"
+#include <fstream>
+#include <iostream>
+
+DRAMDevice::DRAMDevice(std::string file):MemDevice(){
+  std::ifstream fileStream;
+  std::string s;
+  int t;
+  fileStream.open(file.c_str(),std::ifstream::in);
+  while (!fileStream.eof()){
+    fileStream >> s >> t;
+    switch (s){
+    case "tBurst":
+      tBurst = t;
+      break;
+    case "tCAS":
+      tCAS = t;
+      break;
+    case "tCMD":
+      tCMD = t;
+      break;
+    case "tCWD":
+      tCWD = t;
+      break;
+    case "tDQS":
+      tDQS = t;
+      break;
+    case "tFAW":
+      tFAW = t;
+      break;
+    case "tRAS":
+      tRAS = t;
+      break;
+    case "tRC":
+      tRC = t;
+      break;
+    case "tRCD":
+      tRCD = t;
+      break;
+    case "tRFC":
+      tRFC = t;
+      break;
+    case "tRRD":
+      tRRD = t;
+      break;
+    case "tRP":
+      tRP = t;
+      break;
+    case "tWR":
+      tWR = t;
+      break;
+    default:
+      panic("Wrong timing Parameter");
+    }
+  }
+  fileStream.close();
+}
+
+
+void tick(int n){
+}

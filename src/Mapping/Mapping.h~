@@ -1,0 +1,22 @@
+#ifndef MAPPING_H_
+#define MAPPING_H_
+
+#include "../Common.h"
+
+class Mapping: public Module{
+ public:
+  Mapping(std::vector<int>,std::vector<int>,std::vector<int>);
+ protected:
+  virtual Package isAvai(Package){};
+  virtual Package sendPackage(Package){};
+  virtual Package isDone(Package){};
+  virtual Package getPackage(Package){};
+  int map_port(Package);
+  std::vector<int> map;
+  std::vector<int> bitPosition;
+  std::vector<int> numPosition;
+  std::vector<Package> waitingPackage;
+  std::vector<int> waitingPackageValid;
+};
+
+#endif //MAPPING_H_

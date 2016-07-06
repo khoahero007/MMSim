@@ -2,7 +2,7 @@
 
 Requester::Requester():Module(4){
   //Module::Module();
-  ToCallTag.push_back("isFull");
+  ToCallTag.push_back("isAvai");
   ToCallTag.push_back("sendPackage");
   ToCallTag.push_back("isDone");
   ToCallTag.push_back("getPackage");

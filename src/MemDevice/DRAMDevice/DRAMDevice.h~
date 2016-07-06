@@ -1,0 +1,16 @@
+#ifndef DRAM_DEVICE_H_
+#define DRAM_DEVICE_H_
+
+class DRAMDevice:public MemDevice{
+ public:
+  DRAMDevice(std::string);
+  void tick(int);
+ protected:
+  Package isAvai(Package);
+  Package sendPackage(Package);
+  Package isDone(Package);
+  Package getPackage(Package);
+  int tBurst,tCAS,tCMD,tCWD,tDQS,tFAW,tRAS,tRC,tRCD,tRFC,tRRD,tRP,tWR;
+}
+
+#endif

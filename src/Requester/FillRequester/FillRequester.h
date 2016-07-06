@@ -13,8 +13,11 @@ class FillRequester: public Requester{
  protected:
   std::ifstream fileStream;
   int finish;
+  int nextPackageValid;
+  std::vector<Package> sentPackage;
+  Package nextPackage;
   Package readPackage();
-  CallBackFunc* isFull_p;
+  CallBackFunc* isAvai_p;
   CallBackFunc* sendPackage_p;
   CallBackFunc* isDone_p;
   CallBackFunc* getPackage_p;

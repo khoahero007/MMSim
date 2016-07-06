@@ -3,7 +3,8 @@
 FillRequester::FillRequester(std::string filename):Requester(){
   fileStream.open(filename.c_str(),std::ifstream::in);
   finish = 0;
-  isFull_p      = &ToCallList[0];
+  nextPackageValid = 0;
+  isAvai_p      = &ToCallList[0];
   sendPackage_p = &ToCallList[1];
   isDone_p      = &ToCallList[2];
   getPackage_p  = &ToCallList[3];
@@ -13,33 +14,47 @@ void FillRequester::tick(int n){
   if (finish == 1)
     timeStamp = timeStamp+n;
   else{
-    Package p,t;
+    Package p;
+
     uint64_t   end = timeStamp + n;
     while (timeStamp<end){
-      p=(*isFull_p)(t);
-      if (*(int*)p[0]==0){
-	p=readPackage();
-	if (*(int*)p[0]==-1){
+      //Read new Package if needed
+      if (nextPackageValid == 0){
+	nextPackage = readPackage();
+	if (*(int*)nextPackage[0]==-1){
 	  finish = 1;
-	  timeStamp = end;
+	  timeStamp = timeStamp +n;
 	  fileStream.close();
 	  return;
-	}else{
-	  p.erase(p.begin());
-	  #ifdef FILL_REQUESTER_DEBUG
-	  std::cout << "Send Package at " << std::dec << timeStamp << std::endl;
-	  std::cout << *(int*)p[0] << " " << std::hex<< *(uint64_t*)p[1] << std::endl;
-	  #endif
-	  p=(*sendPackage_p)(p);
 	}
+	nextPackageValid = 1;
+	nextPackage.erase(nextPackage.begin());
+	nextPackage = AddressMap::getMap(nextPackage);
       }
-      p=(*isDone_p)(t);
-      if (*(int*)p[0]==1){
-	p=(*getPackage_p)(t);
+      //Priority send new Package over get finished Package
+      //Check available and send Package
+      p=(*isAvai_p)(nextPackage);
+      if (*(int*)p[0]==AVAILABLE){
 	#ifdef FILL_REQUESTER_DEBUG
-	std::cout << "Get Package at " << std::dec << timeStamp << std::endl;
-	std::cout << *(int*)p[0] << " " << std::hex<< *(uint64_t*)p[1] << std::endl;
+	std::cout << "FillRequester " << nameTag << " send Package at " << std::dec << timeStamp << std::endl;
+	printPackage(nextPackage);
+	//std::cout << *(int*)nextPackage[0] << " " << std::hex<< *(uint64_t*)nextPackage[1] << std::endl;
 	#endif
+	p=(*sendPackage_p)(nextPackage);
+	sentPackage.push_back(nextPackage);
+	nextPackageValid = 0;
+      }
+      //Check sentPackage have been finished and get it back
+      //Get Package in order with the sent order
+      p=(*isDone_p)(sentPackage[0]);
+      if (*(int*)p[0]==DONE){
+	p=(*getPackage_p)(sentPackage[0]);
+        #ifdef FILL_REQUESTER_DEBUG
+	std::cout << "FillRequester " << nameTag << " get Package at " << std::dec << timeStamp << std::endl;
+	printPackage(nextPackage);
+	//std::cout << *(int*)p[0] << " " << std::hex<< *(uint64_t*)p[1] << std::endl;
+        #endif
+	sentPackage.erase(sentPackage.begin());
       }
       timeStamp++;
     }
@@ -55,6 +70,7 @@ Package FillRequester::readPackage(){
     p.push_back(new int());
     p.push_back(new int());
     p.push_back(new uint64_t());
+    p.push_back(new int());
     *(int*)p[0]=1;
     std::string s;
     int i;
@@ -66,6 +82,7 @@ Package FillRequester::readPackage(){
     }else{
       *(int*)p[1]=REQUEST_READ;
     }
+    *(int*)p[3]=0;
   }
   return p;
 }

@@ -3,7 +3,16 @@
 TimedRequester::TimedRequester(std::string filename):Requester(){
   fileStream.open(filename.c_str(),std::ifstream::in);
   finish = 0;
-  isFull_p      = &ToCallList[0];
+  timeStampToSend = 0;
+  readPackage();
+  if (toSend.size()==0){
+    finish = 1;
+    fileStream.close();
+  }
+  toSend[0] = AddressMap::getMap(toSend[0]);
+  if (toSend.size()==2)
+    toSend[1] = AddressMap::getMap(toSend[1]);
+  isAvai_p      = &ToCallList[0];
   sendPackage_p = &ToCallList[1];
   isDone_p      = &ToCallList[2];
   getPackage_p  = &ToCallList[3];
@@ -13,36 +22,44 @@ void TimedRequester::tick(int n){
   if (finish == 1)
     timeStamp = timeStamp + n;
   else{
-    Package p,t;
+    Package p;
     uint64_t end = timeStamp +n;
     while (timeStamp<end){
-      p=(*isFull_p)(t);
-      if (*(int*)p[0]==0){
-	if (toSend.size()==0)
-	  readPackage();
+      if (timeStamp >= timeStampToSend && finish==0){
 	if (toSend.size()==0){
-	  finish = 1;
-	  timeStamp = end;
-	  fileStream.close();
-	  return;
+	  readPackage();
+	  if (toSend.size()==0){
+	    finish = 1;
+	    fileStream.close();
+	    return;
+	  }
+	  toSend[0] = AddressMap::getMap(toSend[0]);
+	  if (toSend.size()==2)
+	    toSend[1] = AddressMap::getMap(toSend[1]);
 	}
-
-	if (timeStamp >=timeStampToSend){
+	p=(*isAvai_p)(toSend[0]);
+	if (*(int*)p[0]==AVAILABLE){;
 	  #ifdef TIMED_REQUESTER_DEBUG
-          std::cout << "Send Package at " << std::dec << timeStamp << std::endl;
-          std::cout << *(int*)toSend[0][0] << " " << std::hex<< *(uint64_t*)toSend[0][1] << std::endl;
+	  std::cout << "TimedRequester " << nameTag << " send Package at " << std::dec << timeStamp << std::endl;
+	  printPackage(toSend[0]);
+	  //std::cout << *(int*)toSend[0][0] << " " << std::hex<< *(uint64_t*)toSend[0][1] << std::endl;
 	  #endif
 	  p=(*sendPackage_p)(toSend[0]);
+	  sentPackage.push_back(toSend[0]);
 	  toSend.erase(toSend.begin());
 	}
       }
-      p=(*isDone_p)(t);
-      if (*(int*)p[0]==1){
-	p=(*getPackage_p)(t);
-	#ifdef TIMED_REQUESTER_DEBUG
-	std::cout << "Get Package at " << std::dec << timeStamp << std::endl;
-	std::cout << *(int*)p[0] << " " << std::hex<< *(uint64_t*)p[1] << std::endl;
-	#endif
+      if (sentPackage.size()>0){
+	p=(*isDone_p)(sentPackage[0]);
+	if (*(int*)p[0]==DONE){
+	  p=(*getPackage_p)(sentPackage[0]);
+#ifdef TIMED_REQUESTER_DEBUG
+	  std::cout << "TimeRequester " << nameTag << " get Package at " << std::dec << timeStamp << std::endl;
+	  printPackage(toSend[0]);
+	  //std::cout << *(int*)p[0] << " " << std::hex<< *(uint64_t*)p[1] << std::endl;
+#endif
+	  sentPackage.erase(sentPackage.begin());
+	}
       }
       timeStamp++;
     }
@@ -53,6 +70,7 @@ void TimedRequester::tick(int n){
 void TimedRequester::readPackage(){
 
   if (fileStream.eof()){
+    finish = 1;
     return;
   }else{
     Package p;
@@ -86,11 +104,15 @@ void TimedRequester::readPackage(){
     readPackage.push_back(new int());
     *(int*)readPackage[0]=REQUEST_READ;
     readPackage.push_back(p[1]);
+    readPackage.push_back(new int());
+    *(int*)readPackage[2]=0;
     toSend.push_back(readPackage);
     if (p.size()==3){
       writePackage.push_back(new int());
       *(int*)writePackage[0]=REQUEST_WRITE;
       writePackage.push_back(p[2]);
+      writePackage.push_back(new int());
+      *(int*)writePackage[2]=0;
       toSend.push_back(writePackage);
     }
   }

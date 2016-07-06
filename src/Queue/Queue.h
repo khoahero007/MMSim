@@ -6,7 +6,7 @@ class Queue: public Module{
  public:
   Queue(int);
  protected:
-  virtual Package isFull(Package){};
+  virtual Package isAvai(Package){};
   virtual Package sendPackage(Package){};
   virtual Package isDone(Package){};
   virtual Package getPackage(Package){};

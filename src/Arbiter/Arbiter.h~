@@ -1,0 +1,10 @@
+#ifndef ARBITER_H_
+#define ARBITER_H_
+
+class Arbiter: public Module{
+ public:
+  Arbiter(int n);
+}
+
+
+#endif //ARBITER_H_

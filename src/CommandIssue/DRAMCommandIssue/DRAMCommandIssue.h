@@ -1,0 +1,33 @@
+#ifndef DRAM_COMMAND_ISSUE_H_
+#define DRAM_COMMAND_ISSUE_H_
+
+#include "../CommandIssue.h"
+#include <iostream>
+
+class DRAMCommandIssue: public CommandIssue{
+ public:
+  DRAMCommandIssue();
+  void tick(int);
+ protected:
+  Package isAvai(Package);
+  Package sendPackage(Package);
+  Package isDone(Package);
+  Package getPackage(Package);
+
+  void send_PR();
+  void send_RA();
+  void send_CR();
+  void send_CW();
+  
+  CallBackFunc* isAvai_p;
+  CallBackFunc* sendPackage_p;
+  CallBackFunc* isDone_p;
+  CallBackFunc* getPackage_p;
+
+  Package currentPackage;
+  int currentPackageStatus; // 0: Invalid; 1: Valid; 2:Done;
+  int lastCommand;
+};
+
+
+#endif //DRAM_COMMAND_ISSUE_H_

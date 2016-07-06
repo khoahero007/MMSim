@@ -16,11 +16,12 @@ class TimedRequester: public Requester{
   std::ifstream fileStream;
   int finish;
   void readPackage();
-  CallBackFunc* isFull_p;
+  CallBackFunc* isAvai_p;
   CallBackFunc* sendPackage_p;
   CallBackFunc* isDone_p;
   CallBackFunc* getPackage_p;
-  
+
+  std::vector<Package> sentPackage;
   std::vector<Package> toSend;
   uint64_t timeStampToSend;
 };

@@ -1,0 +1,8 @@
+#include "Arbiter.h"
+
+Arbiter::Arbiter():Module(4){
+  ToCallTag.push_back("isFull");
+  ToCallTag.push_back("sendPackage");
+  ToCallTag.push_back("isDone");
+  ToCallTag.push_back("getPackage");
+}
