@@ -38,9 +38,9 @@ void PriorityArbiter::tick(int n){
 
 Package PriorityArbiter::isAvai(int n,Package in){
   Package out;
-  out.push_back(new int());
+  out.push_back(0);
   if (Master[n]->getTimeStamp() < timeStamp){
-    *(int*)out[0]=NOT_AVAILABLE;
+    out[0]=NOT_AVAILABLE;
   }else{
     if (Master[n]->getTimeStamp()>timeStamp)
       tick(Master[n]->getTimeStamp()-timeStamp);
@@ -48,7 +48,7 @@ Package PriorityArbiter::isAvai(int n,Package in){
       if (Master[i]->getTimeStamp()<=timeStamp)
 	Master[i]->tick(timeStamp-Master[i]->getTimeStamp()+1);
     if (Master[n]->getTimeStamp()<timeStamp)
-      *(int*)out[0]=NOT_AVAILABLE;
+      out[0]=NOT_AVAILABLE;
     else
       out = (*isAvai_p)(in);
   }
@@ -68,8 +68,8 @@ Package PriorityArbiter::sendPackage(int n,Package in){
     if (Master[n]->getTimeStamp()<timeStamp)
       panic("The Slave have been used in this timeStamp "+std::to_string(Master[n]->getTimeStamp()));
     else{
-      in.push_back(new int());
-      *(int*)in.back()=n;
+      in.push_back(0);
+      in.back()=n;
       out = (*sendPackage_p)(in);
     }
   }
@@ -78,9 +78,9 @@ Package PriorityArbiter::sendPackage(int n,Package in){
 
 Package PriorityArbiter::isDone(int n,Package in){
   Package out;
-  out.push_back(new int());
+  out.push_back(0);
   if (Master[n]->getTimeStamp() < timeStamp){
-    *(int*)out[0]=NOT_DONE;
+    out[0]=NOT_DONE;
   }else{
     if (Master[n]->getTimeStamp()>timeStamp)
       tick(Master[n]->getTimeStamp()-timeStamp);
@@ -88,10 +88,10 @@ Package PriorityArbiter::isDone(int n,Package in){
       if (Master[i]->getTimeStamp()<=timeStamp)
 	Master[i]->tick(timeStamp-Master[i]->getTimeStamp()+1);
     if (Master[n]->getTimeStamp()<timeStamp)
-      *(int*)out[0]=NOT_DONE;
+      out[0]=NOT_DONE;
     else{
-      in.push_back(new int());
-      *(int*)in.back()=n;
+      in.push_back(0);
+      in.back()=n;
       out = (*isDone_p)(in);
     }
   }

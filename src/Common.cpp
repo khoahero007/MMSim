@@ -74,7 +74,7 @@ void connect(Module *master,std::string MTag, Module *slave, std::string STag, s
 
 void printPackage(Package in){
   for (auto i=0;i<in.size();i++)
-    std::cout << std::dec << *(int*) in[i] << " ";
+    std::cout << std::dec << in[i] << " ";
   std::cout << std::endl;
 }
 

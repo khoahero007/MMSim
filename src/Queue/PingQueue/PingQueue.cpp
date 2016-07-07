@@ -26,15 +26,15 @@ void PingQueue::tick(int n){
 Package PingQueue::isAvai(Package in){
   Package out;
   
-  out.push_back(new int());
+  out.push_back(0);
   if (Master[0]->getTimeStamp()<timeStamp)
-    *(int*)out[0]=NOT_AVAILABLE;
+    out[0]=NOT_AVAILABLE;
   else{
     tick(Master[0]->getTimeStamp()-timeStamp);
     if (queue.size()<size)
-      *((int*)out[0])=AVAILABLE;
+      out[0]=AVAILABLE;
     else
-      *((int*)out[0])=NOT_AVAILABLE;
+      out[0]=NOT_AVAILABLE;
   }
   return out;
 }
@@ -42,17 +42,17 @@ Package PingQueue::isAvai(Package in){
 Package PingQueue::isDone(Package in){
   Package out;
 
-  out.push_back(new int());
+  out.push_back(0);
   if (Master[0]->getTimeStamp()<timeStamp)
-    *(int*)out[0]=NOT_AVAILABLE;
+    out[0]=NOT_AVAILABLE;
   else{
     tick(Master[0]->getTimeStamp()-timeStamp);
     if (queue.size()==0)
-      *((int*)out[0])=NOT_DONE;
+      out[0]=NOT_DONE;
     else if (done[0]==1 && (*(int*)in.back() == *(int*)queue[0].back()))
-      *((int*)out[0])=DONE;
+      out[0]=DONE;
     else
-      *((int*)out[0])=NOT_DONE;
+      out[0]=NOT_DONE;
   }
   return out;
 }
@@ -63,13 +63,13 @@ Package PingQueue::sendPackage(Package in){
     panic("Try to send package into unavailable queue");
   else{
     tick(Master[0]->getTimeStamp()-timeStamp);
-    out.push_back(new int());
+    out.push_back(0);
     if (queue.size()==size)
       panic("Try to send package into full queue");
     else{
       queue.push_back(in);
       done.push_back(0);
-      *((int*)out[0])=1;
+      out[0]=1;
       if (queue.size()==1)
 	last = timeStamp;
       tick(1);

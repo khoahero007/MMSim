@@ -69,11 +69,11 @@ void DRAMDevice::RA(Package in){
   if (tFAW_array[0]+tFAW > RA_avai)
     RA_avai = timeStamp + tFAW;
   //Set row buffer
-  if (*(int*)in[BANK_PACKAGE_POS]==-1){
+  if (in[BANK_PACKAGE_POS]==-1){
     for (auto i = 0; i<row_buffer.size();i++)
-      row_buffer[i]=*(int*)in[ROW_PACKAGE_POS];
+      row_buffer[i]=in[ROW_PACKAGE_POS];
   }else{
-    row_buffer[*(int*)in[BANK_PACKAGE_POS]] = *(int*)in[ROW_PACKAGE_POS];
+    row_buffer[in[BANK_PACKAGE_POS]] = in[ROW_PACKAGE_POS];
   }
 }
 
@@ -84,11 +84,11 @@ void DRAMDevice::PR(Package in){
   CW_avai = doneTimeStamp;
   PR_avai = doneTimeStamp;
   //Reset row buffer
-  if (*(int*)in[BANK_PACKAGE_POS]==-1){
+  if (in[BANK_PACKAGE_POS]==-1){
     for (auto i = 0; i<row_buffer.size();i++)
-      row_buffer[i]=*(int*)in[ROW_PACKAGE_POS];
+      row_buffer[i]=in[ROW_PACKAGE_POS];
   }else{
-    row_buffer[*(int*)in[BANK_PACKAGE_POS]] = *(int*)in[ROW_PACKAGE_POS];
+    row_buffer[in[BANK_PACKAGE_POS]] = in[ROW_PACKAGE_POS];
   }
 }
 
@@ -111,31 +111,31 @@ void DRAMDevice::CR(Package in){
 Package DRAMDevice::isAvai(Package in){
   tick(Master[0]->getTimeStamp()-timeStamp);
   Package out;
-  out.push_back(new int());
-  out.push_back(new int());
-  if (*(int*)in[0] == REQUEST_READ || *(int*)in[0] == REQUEST_WRITE || *(int*)in[0] == REQUEST_REFRESH){
-    *(int*)out[0] = AVAILABLE;
-    *(int*)out[1] = row_buffer[*(int*)in[BANK_PACKAGE_POS]];
-  }else if (*(int*)in[0] == COMMAND_RA){
+  out.push_back(0);
+  out.push_back(0);
+  if (in[0] == REQUEST_READ || in[0] == REQUEST_WRITE || in[0] == REQUEST_REFRESH){
+    out[0] = AVAILABLE;
+    out[1] = row_buffer[in[BANK_PACKAGE_POS]];
+  }else if (in[0] == COMMAND_RA){
     if (timeStamp >= RA_avai)
-      *(int*)out[0] = AVAILABLE;
+      out[0] = AVAILABLE;
     else
-      *(int*)out[0] = NOT_AVAILABLE;
-  }else if (*(int*)in[0] == COMMAND_PR){
+      out[0] = NOT_AVAILABLE;
+  }else if (in[0] == COMMAND_PR){
     if (timeStamp >= PR_avai)
-      *(int*)out[0] = AVAILABLE;
+      out[0] = AVAILABLE;
     else
-      *(int*)out[0] = NOT_AVAILABLE;
-  }else if (*(int*)in[0] == COMMAND_CW){
+      out[0] = NOT_AVAILABLE;
+  }else if (in[0] == COMMAND_CW){
     if (timeStamp >= CW_avai)
-      *(int*)out[0] = AVAILABLE;
+      out[0] = AVAILABLE;
     else
-      *(int*)out[0] = NOT_AVAILABLE;
-  }else if (*(int*)in[0] == COMMAND_CR){
+      out[0] = NOT_AVAILABLE;
+  }else if (in[0] == COMMAND_CR){
     if (timeStamp >= CR_avai)
-      *(int*)out[0] = AVAILABLE;
+      out[0] = AVAILABLE;
     else
-      *(int*)out[0] = NOT_AVAILABLE;
+      out[0] = NOT_AVAILABLE;
   }else{
     panic("Invalid package for mem device");
   }
@@ -144,19 +144,19 @@ Package DRAMDevice::isAvai(Package in){
 
 Package DRAMDevice::sendPackage(Package in){
   tick(Master[0]->getTimeStamp()-timeStamp);
-  if (*(int*)in[0] == COMMAND_RA){
+  if (in[0] == COMMAND_RA){
     if (timeStamp < RA_avai)
       panic("Unable to receive RA command");
     RA(in);
-  }else if (*(int*)in[0] == COMMAND_PR){
+  }else if (in[0] == COMMAND_PR){
     if (timeStamp < PR_avai)
       panic("Unable to receive PR command");
     PR(in);
-  }else if (*(int*)in[0] == COMMAND_CW){
+  }else if (in[0] == COMMAND_CW){
     if (timeStamp < CW_avai)
       panic("Unable to receive CW command");
     CW(in);
-  }else if (*(int*)in[0] == COMMAND_CR){
+  }else if (in[0] == COMMAND_CR){
     if (timeStamp < CR_avai)
       panic("Unable to receive CR command");
     CR(in);
@@ -169,13 +169,13 @@ Package DRAMDevice::sendPackage(Package in){
 Package DRAMDevice::isDone(Package in){
   Package out = in;
   if (Master[0]->getTimeStamp()<timeStamp){
-    *(int*)out[0]=NOT_DONE;
+    out[0]=NOT_DONE;
   }else{
     tick(Master[0]->getTimeStamp()-timeStamp);
     if (doneTimeStamp > timeStamp)
-      *(int*)out[0]=NOT_DONE;
+      out[0]=NOT_DONE;
     else
-      *(int*)out[0]=DONE;
+      out[0]=DONE;
   }
   return out;
 }

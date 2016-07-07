@@ -38,7 +38,7 @@ void TimedRequester::tick(int n){
 	    toSend[1] = AddressMap::getMap(toSend[1]);
 	}
 	p=(*isAvai_p)(toSend[0]);
-	if (*(int*)p[0]==AVAILABLE){;
+	if (p[0]==AVAILABLE){;
 	  #ifdef TIMED_REQUESTER_DEBUG
 	  std::cout << "TimedRequester " << nameTag << " send Package at " << std::dec << timeStamp << std::endl;
 	  printPackage(toSend[0]);
@@ -51,7 +51,7 @@ void TimedRequester::tick(int n){
       }
       if (sentPackage.size()>0){
 	p=(*isDone_p)(sentPackage[0]);
-	if (*(int*)p[0]==DONE){
+	if (p[0]==DONE){
 	  p=(*getPackage_p)(sentPackage[0]);
 #ifdef TIMED_REQUESTER_DEBUG
 	  std::cout << "TimeRequester " << nameTag << " get Package at " << std::dec << timeStamp << std::endl;
@@ -84,35 +84,35 @@ void TimedRequester::readPackage(){
     uint64_t b,c;
 
     if (linestream1 >> a >> b >> c){
-      p.push_back(new int());
-      p.push_back(new uint64_t());
-      p.push_back(new uint64_t());
-      *(int*)p[0]=a;
-      *(uint64_t*)p[1]=b;
-      *(uint64_t*)p[2]=c;
+      p.push_back(0);
+      p.push_back(0);
+      p.push_back(0);
+      p[0]=a;
+      p[1]=b;
+      p[2]=c;
     }else{
       linestream2 >> a >> b;
-      p.push_back(new int());
-      p.push_back(new uint64_t());
-      *(int*)p[0]=a;
-      *(uint64_t*)p[1]=b;      
+      p.push_back(0);
+      p.push_back(0);
+      p[0]=a;
+      p[1]=b;      
     }
     
-    timeStampToSend = timeStamp + *(int*)p[0];
+    timeStampToSend = timeStamp + p[0];
     Package readPackage;
     Package writePackage;
-    readPackage.push_back(new int());
-    *(int*)readPackage[0]=REQUEST_READ;
+    readPackage.push_back(0);
+    readPackage[0]=REQUEST_READ;
     readPackage.push_back(p[1]);
-    readPackage.push_back(new int());
-    *(int*)readPackage[2]=0;
+    readPackage.push_back(0);
+    readPackage[2]=0;
     toSend.push_back(readPackage);
     if (p.size()==3){
-      writePackage.push_back(new int());
-      *(int*)writePackage[0]=REQUEST_WRITE;
+      writePackage.push_back(0);
+      writePackage[0]=REQUEST_WRITE;
       writePackage.push_back(p[2]);
-      writePackage.push_back(new int());
-      *(int*)writePackage[2]=0;
+      writePackage.push_back(0);
+      writePackage[2]=0;
       toSend.push_back(writePackage);
     }
   }

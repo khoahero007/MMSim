@@ -1,6 +1,6 @@
 #include "Mapping.h"
 
-Mapping::Mapping(std::vector<int> num,std::vector<int> bit,std::vector<int> map_in):Module(map_in.size()*4){
+Mapping::Mapping(int mapProp_in,std::vector<int> map_in):Module(map_in.size()*4){
   std::string isAvai_s,sendPackage_s,isDone_s,getPackage_s;
   isAvai_s = "isAvai";
   sendPackage_s = "sendPackage";
@@ -17,25 +17,86 @@ Mapping::Mapping(std::vector<int> num,std::vector<int> bit,std::vector<int> map_
   ToBeCalledTag.push_back("getPackage");
   
   map = map_in;
-  bitPosition = bit;
-  numPosition = num;
-  int temp=0;
+  mapProp = mapProp_in;
   for (auto i=0;i<map.size();i++){
     ToCallTag.push_back(isAvai_s+"_"+std::to_string(i)+"_");
     ToCallTag.push_back(sendPackage_s+"_"+std::to_string(i)+"_");
     ToCallTag.push_back(isDone_s+"_"+std::to_string(i)+"_");
     ToCallTag.push_back(getPackage_s+"_"+std::to_string(i)+"_");
-    if (temp<map[i])
-      temp = map[i];
   }
-  waitingPackage.resize(temp+1);
-  waitingPackageValid.resize(temp+1,0);
+
+  MasterTag.push_back("Anything");
 }
 
-int map_port(Package in){
-  int out=0;
-  for (auto i = 0; i < bitPosition.size(); i++){
-    out = out*2 + ((*(uint64_t*)in[numPosition[i]] >> bitPosition[i]) & 1);
-  }
+void Mapping::tick(int n){
+  timeStamp = timeStamp + n;
+}
+
+int Mapping::map_port(Package in){
+  return *(int*)in[mapProp];
+}
+
+Package Mapping::isAvai(Package in){
+  tick(Master[0]->getTimeStamp()-timeStamp);
+  int m=map_port(in);
+  Package out,p;
+  out.push_back(new int());
+  *(int*)out[0]=AVAILABLE;
+  for (auto i=0;i<map.size();i++)
+    if (map[i]==m){
+      p=ToCallList[4*i](in);
+      if (*(int*)p[0]==NOT_AVAILABLE){
+	*(int*)out[0]=NOT_AVAILABLE;
+	return out;
+      }	
+    }
+  return out;
+}
+
+Package Mapping::sendPackage(Package in){
+  tick(Master[0]->getTimeStamp()-timeStamp);
+  int m=map_port(in);
+  Package out;
+  for (auto i=0;i<map.size();i++)
+    if (map[i]==m){
+      out = ToCallList[4*i+1](in);
+#ifdef MAPPING_DEBUG
+      std::cout << "Mapping " << nameTag << " route package to port " << std::dec << i << " at timestamp " << std::dec << timeStamp << std::endl;
+#endif	//MAPPING_DEBUG
+    }
+  return out;
+}
+
+Package Mapping::isDone(Package in){
+  tick(Master[0]->getTimeStamp()-timeStamp);
+  int m=map_port(in);
+  Package out,p;
+  out.push_back(new int());
+  *(int*)out[0]=DONE;
+  for (auto i=0;i<map.size();i++)
+    if (map[i]==m){
+      p=ToCallList[4*i+2](in);
+      if (*(int*)p[0]==NOT_DONE){
+	*(int*)out[0]=NOT_DONE;
+	return out;
+      }	
+    }
+  return out;
+}
+
+Package Mapping::getPackage(Package in){
+  tick(Master[0]->getTimeStamp()-timeStamp);
+  int m=map_port(in);
+  Package out,p;
+  out = in;
+  for (auto i=0;i<map.size();i++)
+    if (map[i]==m){
+      p = ToCallList[4*i+3](in);
+      for (auto i = in.size(); i < p.size(); i++)
+	out.push_back(p[i]);
+#ifdef MAPPING_DEBUG
+      std::cout << "Mapping " << nameTag << " get package from port " << std::dec << i << " at timestamp " << std::dec << timeStamp << std::endl;
+#endif	//MAPPING_DEBUG
+    }
   return out;
 }

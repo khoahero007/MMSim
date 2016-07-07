@@ -33,20 +33,20 @@ void Mapping::tick(int n){
 }
 
 int Mapping::map_port(Package in){
-  return *(int*)in[mapProp];
+  return in[mapProp];
 }
 
 Package Mapping::isAvai(Package in){
   tick(Master[0]->getTimeStamp()-timeStamp);
   int m=map_port(in);
   Package out,p;
-  out.push_back(new int());
-  *(int*)out[0]=AVAILABLE;
+  out.push_back(0);
+  out[0]=AVAILABLE;
   for (auto i=0;i<map.size();i++)
     if (map[i]==m){
       p=ToCallList[4*i](in);
-      if (*(int*)p[0]==NOT_AVAILABLE){
-	*(int*)out[0]=NOT_AVAILABLE;
+      if (p[0]==NOT_AVAILABLE){
+	out[0]=NOT_AVAILABLE;
 	return out;
       }	
     }
@@ -71,13 +71,13 @@ Package Mapping::isDone(Package in){
   tick(Master[0]->getTimeStamp()-timeStamp);
   int m=map_port(in);
   Package out,p;
-  out.push_back(new int());
-  *(int*)out[0]=DONE;
+  out.push_back(0);
+  out[0]=DONE;
   for (auto i=0;i<map.size();i++)
     if (map[i]==m){
       p=ToCallList[4*i+2](in);
-      if (*(int*)p[0]==NOT_DONE){
-	*(int*)out[0]=NOT_DONE;
+      if (p[0]==NOT_DONE){
+	out[0]=NOT_DONE;
 	return out;
       }	
     }

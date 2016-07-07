@@ -11,7 +11,7 @@
 
 
 class Module;
-typedef std::vector<void*> Package;
+typedef std::vector<int64_t> Package;
 typedef std::function<Package(Package)> CallBackFunc ;
 typedef std::vector<CallBackFunc> CBFuncList;
 				      

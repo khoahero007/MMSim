@@ -14,8 +14,8 @@ g++ -g -Wall -std=c++11 -c Arbiter/RRArbiter/RRArbiter.cpp -o ../obj/RRArbiter.o
 g++ -g -Wall -std=c++11 -c Mapping/Mapping.cpp -o ../obj/Mapping.o
 g++ -g -Wall -std=c++11 -c AddressMap/AddressMap.cpp -o ../obj/AddressMap.o
 
-g++ -g -Wall -std=c++11 -c MemDevice/DRAMDevice/DRAMDevice.cpp -o ../obj/DRAMMemDevice.o
 g++ -g -Wall -std=c++11 -c MemDevice/MemDevice.cpp -o ../obj/MemDevice.o
+g++ -g -Wall -std=c++11 -c MemDevice/DRAMDevice/DRAMDevice.cpp -o ../obj/DRAMMemDevice.o
 
 g++ -g -Wall -std=c++11 -c CommandIssue/CommandIssue.cpp -o ../obj/CommandIssue.o
 g++ -g -Wall -std=c++11 -c CommandIssue/DRAMCommandIssue/DRAMCommandIssue.cpp -o ../obj/DRAMCommandIssue.o

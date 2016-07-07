@@ -94,6 +94,12 @@ Package RRArbiter::sendPackage(int n,Package in){
       in.push_back(new int());
       *(int*)in.back()=n;
       out = (*sendPackage_p)(in);
+      timeStamp++;
+#ifdef RR_ARBITER_DEBUG
+      std::cout << "RRArbiter " << nameTag << " send Package from port " << std::dec << n  << " at timestamp " << std::dec<< timeStamp << std::endl;
+      printPackage(in);
+      //std::cout << *(int *)in[0] << " " << *(uint*)in[1] << std:: endl;
+#endif
       if (port == n)
 	used = 1;
     }
@@ -141,8 +147,10 @@ Package RRArbiter::getPackage(int n,Package in){
     }
     if (Master[n]->getTimeStamp()<timeStamp)
       panic("The Slave have been used in this timeStamp "+std::to_string(Master[n]->getTimeStamp()));
-    else
+    else{
       out = (*getPackage_p)(in);
+      timeStamp++;
+    }
     if (port == n)
       used = 1;
   }

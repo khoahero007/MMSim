@@ -55,9 +55,9 @@ void RRArbiter::tick(int n){
 
 Package RRArbiter::isAvai(int n,Package in){
   Package out;
-  out.push_back(new int());
+  out.push_back(0);
   if (Master[n]->getTimeStamp() < timeStamp){
-    *(int*)out[0]=NOT_AVAILABLE;
+    out[0]=NOT_AVAILABLE;
   }else{
     if (Master[n]->getTimeStamp()>timeStamp)
       tick(Master[n]->getTimeStamp()-timeStamp);
@@ -68,7 +68,7 @@ Package RRArbiter::isAvai(int n,Package in){
 	Master[i]->tick(timeStamp-Master[i]->getTimeStamp()+1);
     }
     if (Master[n]->getTimeStamp()<timeStamp)
-      *(int*)out[0]=NOT_AVAILABLE;
+      out[0]=NOT_AVAILABLE;
     else
       out = (*isAvai_p)(in);
   }
@@ -91,8 +91,8 @@ Package RRArbiter::sendPackage(int n,Package in){
     if (Master[n]->getTimeStamp()<timeStamp)
       panic("The Slave have been used in this timeStamp "+std::to_string(Master[n]->getTimeStamp()));
     else{
-      in.push_back(new int());
-      *(int*)in.back()=n;
+      in.push_back(0);
+      in.back()=n;
       out = (*sendPackage_p)(in);
       timeStamp++;
 #ifdef RR_ARBITER_DEBUG
@@ -109,9 +109,9 @@ Package RRArbiter::sendPackage(int n,Package in){
 
 Package RRArbiter::isDone(int n,Package in){
   Package out;
-  out.push_back(new int());
+  out.push_back(0);
   if (Master[n]->getTimeStamp() < timeStamp){
-    *(int*)out[0]=NOT_DONE;
+    out[0]=NOT_DONE;
   }else{
     if (Master[n]->getTimeStamp()>timeStamp)
       tick(Master[n]->getTimeStamp()-timeStamp);
@@ -122,10 +122,10 @@ Package RRArbiter::isDone(int n,Package in){
 	Master[i]->tick(timeStamp-Master[i]->getTimeStamp()+1);
     }
     if (Master[n]->getTimeStamp()<timeStamp)
-      *(int*)out[0]=NOT_DONE;
+      out[0]=NOT_DONE;
     else{
-      in.push_back(new int());
-      *(int*)in.back()=n;
+      in.push_back(0);
+      in.back()=n;
       out = (*isDone_p)(in);
     }
   }

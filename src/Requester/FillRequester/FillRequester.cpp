@@ -21,7 +21,7 @@ void FillRequester::tick(int n){
       //Read new Package if needed
       if (nextPackageValid == 0){
 	nextPackage = readPackage();
-	if (*(int*)nextPackage[0]==-1){
+	if (nextPackage[0]==-1){
 	  finish = 1;
 	  timeStamp = timeStamp +n;
 	  fileStream.close();
@@ -34,7 +34,7 @@ void FillRequester::tick(int n){
       //Priority send new Package over get finished Package
       //Check available and send Package
       p=(*isAvai_p)(nextPackage);
-      if (*(int*)p[0]==AVAILABLE){
+      if (p[0]==AVAILABLE){
 	#ifdef FILL_REQUESTER_DEBUG
 	std::cout << "FillRequester " << nameTag << " send Package at " << std::dec << timeStamp << std::endl;
 	printPackage(nextPackage);
@@ -46,15 +46,17 @@ void FillRequester::tick(int n){
       }
       //Check sentPackage have been finished and get it back
       //Get Package in order with the sent order
-      p=(*isDone_p)(sentPackage[0]);
-      if (*(int*)p[0]==DONE){
-	p=(*getPackage_p)(sentPackage[0]);
-        #ifdef FILL_REQUESTER_DEBUG
-	std::cout << "FillRequester " << nameTag << " get Package at " << std::dec << timeStamp << std::endl;
-	printPackage(nextPackage);
-	//std::cout << *(int*)p[0] << " " << std::hex<< *(uint64_t*)p[1] << std::endl;
-        #endif
-	sentPackage.erase(sentPackage.begin());
+      if (sentPackage.size()>0){
+	p=(*isDone_p)(sentPackage[0]);
+	if (p[0]==DONE){
+	  p=(*getPackage_p)(sentPackage[0]);
+#ifdef FILL_REQUESTER_DEBUG
+	  std::cout << "FillRequester " << nameTag << " get Package at " << std::dec << timeStamp << std::endl;
+	  printPackage(nextPackage);
+	  //std::cout << *(int*)p[0] << " " << std::hex<< *(uint64_t*)p[1] << std::endl;
+#endif
+	  sentPackage.erase(sentPackage.begin());
+	}
       }
       timeStamp++;
     }
@@ -64,25 +66,24 @@ void FillRequester::tick(int n){
 Package FillRequester::readPackage(){
   Package p;
   if (fileStream.eof()){
-    p.push_back(new int());
-    *(int*)p[0]=-1;
+    p.push_back(-1);
   }else{
-    p.push_back(new int());
-    p.push_back(new int());
-    p.push_back(new uint64_t());
-    p.push_back(new int());
-    *(int*)p[0]=1;
+    p.push_back(0);
+    p.push_back(0);
+    p.push_back(0);
+    p.push_back(0);
+    p[0]=1;
     std::string s;
     int i;
-    fileStream >> std::hex >> *(uint64_t*)p[2];
+    fileStream >> std::hex >> p[2];
     fileStream >> s;
     fileStream >> i;
     if (s.compare("W")==0){
-      *(int*)p[1]=REQUEST_WRITE;
+      p[1]=REQUEST_WRITE;
     }else{
-      *(int*)p[1]=REQUEST_READ;
+      p[1]=REQUEST_READ;
     }
-    *(int*)p[3]=0;
+    p[3]=0;
   }
   return p;
 }
